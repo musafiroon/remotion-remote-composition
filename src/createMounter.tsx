@@ -84,43 +84,41 @@ function RemoteComposition({
 	);
 }
 export function createMounter(Composition: () => JSX.Element) {
-	return {
-		mount: (
-			ref: string | HTMLElement,
-			{
-				frame,
-				config,
-				continueRender,
-				compositionProps,
-			}: {
-				frame: number;
-				config: VideoConfig;
-				continueRender: () => void;
-				compositionProps?: { [key: string]: any };
-			}
-		) => {
-			const container =
-				ref instanceof HTMLElement ? ref : document.getElementById(ref);
-			if (!container) {
-				throw new Error("No container found");
-			}
-			const root = container.hasAttribute("data-react-root")
-				? (container as unknown as { reactRoot: Root }).reactRoot
-				: createRoot(container);
-			(container as unknown as { reactRoot: Root }).reactRoot = root;
-			container.setAttribute("data-react-root", "true");
-			root.render(
-				<RemoteComposition
-					frame={frame}
-					config={{ ...config, defaultProps: compositionProps }}
-				>
-					<Composition {...compositionProps} />
-				</RemoteComposition>
-			);
-			/**
-			 * Ideally, continueRender should be called in a useEffect(), that runs after the component is fully loaded
-			 */
-			continueRender();
-		},
+	return (
+		ref: string | HTMLElement,
+		{
+			frame,
+			config,
+			continueRender,
+			compositionProps,
+		}: {
+			frame: number;
+			config: VideoConfig;
+			continueRender: () => void;
+			compositionProps?: { [key: string]: any };
+		}
+	) => {
+		const container =
+			ref instanceof HTMLElement ? ref : document.getElementById(ref);
+		if (!container) {
+			throw new Error("No container found");
+		}
+		const root = container.hasAttribute("data-react-root")
+			? (container as unknown as { reactRoot: Root }).reactRoot
+			: createRoot(container);
+		(container as unknown as { reactRoot: Root }).reactRoot = root;
+		container.setAttribute("data-react-root", "true");
+		root.render(
+			<RemoteComposition
+				frame={frame}
+				config={{ ...config, defaultProps: compositionProps }}
+			>
+				<Composition {...compositionProps} />
+			</RemoteComposition>
+		);
+		/**
+		 * Ideally, continueRender should be called in a useEffect(), that runs after the component is fully loaded
+		 */
+		continueRender();
 	};
 }

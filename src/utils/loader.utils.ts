@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
-import {sleep} from './sleep.utils';
-import {assert} from './assert.utils';
+import { sleep } from "./sleep.utils";
+import { assert } from "./assert.utils";
 
 type WebpackFederatedModule = {
 	[key: string]: {
@@ -12,13 +12,13 @@ type WebpackFederatedModule = {
 };
 export function loadComponent(scope: string, module: string) {
 	return async (): Promise<WebpackFederatedModule | undefined> => {
-		if (typeof window === 'undefined') {
+		if (typeof window === "undefined") {
 			return;
 		}
 		// Initializes the share scope. This fills it with known provided modules from this build and all remotes
 		// @ts-ignore
 		// eslint-disable-next-line no-undef
-		await __webpack_init_sharing__('default');
+		await __webpack_init_sharing__("default");
 
 		type ModuleContainer = {
 			init: () => Promise<void>;
@@ -33,7 +33,7 @@ export function loadComponent(scope: string, module: string) {
 			// eslint-disable-next-line no-undef
 			await container.init(__webpack_share_scopes__.default);
 		} catch (err) {
-			console.warn(err, {scope, module, container});
+			console.warn(err, { scope, module, container });
 		}
 		const factory = await Promise.race([
 			container?.get(module),
@@ -46,7 +46,7 @@ export function loadComponent(scope: string, module: string) {
 			),
 		]);
 		const Module =
-			typeof factory === 'function'
+			typeof factory === "function"
 				? factory()
 				: Promise.reject(
 						new Error(
@@ -69,10 +69,10 @@ export const loadScript = (
 			);
 			resolve(script);
 		}
-		const script = document.createElement('script');
+		const script = document.createElement("script");
 		script.id = id;
 		script.src = src;
-		script.type = 'text/javascript';
+		script.type = "text/javascript";
 		script.async = true;
 		script.onload = () => resolve(script);
 		script.onerror = reject;
@@ -84,7 +84,7 @@ export const loadMicrofrontend = async ({
 	entry,
 	scope,
 	module,
-	composition = 'default',
+	composition = "default",
 }: {
 	entry: string;
 	scope: string;
@@ -94,13 +94,13 @@ export const loadMicrofrontend = async ({
 	loadScript(`mf-${scope.toLowerCase()}-entry`, entry)
 		.then(() => loadComponent(scope, module)())
 		.then((exported) => {
-			console.log(exported);
-			return assert(exported)[composition];
+			return assert(exported)[composition] as unknown as (
+				containerRef: string | HTMLElement
+			) => () => void;
 		})
-		.then(({mount, unmount}) => {
+		.then((mount) => {
 			return {
 				mount,
-				unmount,
 			};
 		})
 		.catch((error: unknown) => Promise.reject(error));
