@@ -30,8 +30,8 @@ function RemoteComposition({
 	 * </RemoteComposition>
 	 */
 	return (
-		<CanUseRemotionHooks.Provider value>
-			<CompositionManager.Provider
+		<Internals.CanUseRemotionHooks.Provider value>
+			<Internals.CompositionManager.Provider
 				value={
 					{
 						compositions: [
@@ -47,20 +47,40 @@ function RemoteComposition({
 							height: config.height,
 							width: config.width,
 						},
-					} as CompositionManagerContext
+
+						folders: [],
+						registerFolder: () => undefined,
+						unregisterFolder: () => undefined,
+						registerComposition: () => undefined,
+						registerSequence: () => undefined,
+						sequences: [],
+						setCurrentComposition: () => undefined,
+						unregisterComposition: () => undefined,
+						unregisterSequence: () => undefined,
+						registerAsset: () => undefined,
+						unregisterAsset: () => undefined,
+						setCurrentCompositionMetadata: () => undefined,
+						assets: [],
+						setClipRegion: () => undefined,
+					} as unknown as CompositionManagerContext
 				}
 			>
-				<TimelineContext.Provider
+				<Internals.Timeline.TimelineContext.Provider
 					value={
 						{
 							frame,
 						} as TimelineContextValue
 					}
 				>
-					{children}
-				</TimelineContext.Provider>
-			</CompositionManager.Provider>
-		</CanUseRemotionHooks.Provider>
+					{" "}
+					<Internals.PrefetchProvider>
+						<Internals.DurationsContextProvider>
+							{children}
+						</Internals.DurationsContextProvider>
+					</Internals.PrefetchProvider>
+				</Internals.Timeline.TimelineContext.Provider>
+			</Internals.CompositionManager.Provider>
+		</Internals.CanUseRemotionHooks.Provider>
 	);
 }
 export function createMounter(Composition: () => JSX.Element) {
@@ -90,7 +110,10 @@ export function createMounter(Composition: () => JSX.Element) {
 			(container as unknown as { reactRoot: Root }).reactRoot = root;
 			container.setAttribute("data-react-root", "true");
 			root.render(
-				<RemoteComposition frame={frame} config={config}>
+				<RemoteComposition
+					frame={frame}
+					config={{ ...config, defaultProps: compositionProps }}
+				>
 					<Composition {...compositionProps} />
 				</RemoteComposition>
 			);
