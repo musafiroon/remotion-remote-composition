@@ -5,11 +5,6 @@ import {
 	CompositionManagerContext,
 } from "remotion";
 import { Internals } from "remotion";
-const {
-	CanUseRemotionHooks,
-	CompositionManager,
-	Timeline: { TimelineContext },
-} = Internals;
 
 function RemoteComposition({
 	frame,
@@ -83,6 +78,8 @@ function RemoteComposition({
 		</Internals.CanUseRemotionHooks.Provider>
 	);
 }
+
+/** Returns a mounter function that is used to load this remote composition on a host */
 export function createMounter(Composition: () => JSX.Element) {
 	return (
 		ref: string | HTMLElement,

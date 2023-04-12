@@ -11,20 +11,32 @@ import {
 	useCurrentFrame,
 	useVideoConfig,
 	VideoConfig,
+	AbsoluteFill,
 } from "remotion";
 
 export type MicrofrontendProps = {
 	scope: string;
-	entry: string;
+	/**
+	 * The url of the exported composition
+	 * eg: http://localhost:3000/remoteEntry.js
+	 */
+	url: string;
+	/**
+	 * The fileName of the script which exports those compositions
+	 * eg: `./src/bootstrap`
+	 */
 	module: string;
-	url?: string;
+	/** The name of the composition exported from the bootstrap file */
+	composition: string;
+	/**Props to pass down to the composition */
+	compositionProps?: { [key: string]: any };
+
 	key?: string;
 	id?: string;
 	hasDelayedRender?: boolean;
 	className?: string;
+	/** An element to show when the remote composition is loading */
 	Loading?: JSX.Element | (() => JSX.Element);
-	composition?: string;
-	compositionProps?: { [key: string]: any };
 	loadMicrofrontend?: (manifest: {
 		scope: string;
 		entry: string;
@@ -49,7 +61,7 @@ export type MicrofrontendProps = {
 const Microfrontend = ({
 	id,
 	scope,
-	entry,
+	url,
 	module,
 	Loading,
 	className,
@@ -72,10 +84,10 @@ const Microfrontend = ({
 		isError,
 		error,
 		data,
-	} = useQuery(`microfrontend?entry=${entry}&module=${module}`, async () => {
+	} = useQuery(`microfrontend?entry=${url}&module=${module}`, async () => {
 		assert(loadMicrofrontend, "props.loadMicrofrontend must be a function");
 		return loadMicrofrontend({
-			entry,
+			entry: url,
 			scope,
 			module,
 			composition,
@@ -131,7 +143,7 @@ const Microfrontend = ({
 				);
 			}
 		};
-	}, [isMounted, isError, entry, module, frame, config]);
+	}, [isMounted, isError, url, module, frame, config]);
 
 	return isError ? (
 		<div>
@@ -166,9 +178,44 @@ const Microfrontend = ({
 
 Microfrontend.defaultProps = {
 	loadMicrofrontend,
-	Loading: () => <div>...loading...</div>,
+	Loading: () => (
+		<AbsoluteFill
+			style={{
+				alignItems: "center",
+				justifyContent: "center",
+				fontSize: "50px",
+				flexDirection: "row",
+			}}
+		>
+			<style>
+				{`
+				.loader-roller-csxjk {
+				  border: 2em solid #f3f3f3; /* Light grey */
+				  border-top: 2em solid #3498db; /* Blue */
+				  border-radius: 100%;
+				  width: 10em;
+				  height: 10em;
+				  animation: spin 2s linear infinite;
+				}
+
+				@keyframes spin {
+				  0% { transform: rotate(0deg); }
+				  100% { transform: rotate(360deg); }
+				}`}
+			</style>
+			<span style={{ fontSize: "2em" }}>Loading Remote Composition</span>
+			&nbsp;
+			<div
+				className="loader-roller-csxjk"
+				style={{ fontSize: "20px", fontFamily: "sans-serif" }}
+			></div>
+		</AbsoluteFill>
+	),
 };
 
+/**
+ * A composition that takes loads a remote composition from an url
+ */
 export const RemoteComposition = (props: MicrofrontendProps) => (
 	<QueryClientProvider client={new QueryClient()}>
 		<Microfrontend {...props} />
