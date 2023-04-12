@@ -8,7 +8,7 @@ With this module, you can share and load remotion compositions from a URL
 
 firstly, on the remote project, you need to change the webpack config to include a module federation plugin pointing to a file that exports composition using the `createMounter()` method
 
-```
+```javascript
 // remotion.config.js
 const webpackOverride = (currentConfiguration) => {
 	return {
@@ -46,7 +46,7 @@ const webpackOverride = (currentConfiguration) => {
 Config.overrideWebpackConfig(webpackOverride);
 ```
 
-```
+```javascript
 // src/bootstrap.tsx
 
 import {HelloWorld} from './HelloWorld';
@@ -66,7 +66,7 @@ This will make an endpoint at `remotion preview url/remoteEntry.js'
 In the `Root.tsx` of the host, `import {RemoteComposition} from 'remotion-remote-composition'`  
 and add it as a composition with the props
 
-```
+```javascript
     <Composition
     	id="HelloWorld"
     	component={RemoteComposition}
