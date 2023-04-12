@@ -35,5 +35,8 @@
 		"remote"
 	],
 	"author": "musafiroon",
-	"license": "MIT"
+	"license": "MIT",
+	"repository": {
+		"url": "https://github.com/musafiroon/remotion-remote-composition"
+	}
 }

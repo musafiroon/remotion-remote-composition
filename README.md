@@ -87,3 +87,5 @@ and add it as a composition with the props
     />
 
 ```
+
+If you find any issues,etc then feel free to file an issue on [GitHub]()
