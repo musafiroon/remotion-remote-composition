@@ -3,6 +3,7 @@
 
 import { sleep } from "./sleep.utils";
 import { assert } from "./assert.utils";
+import { createMounter } from "../createMounter";
 
 type WebpackFederatedModule = {
 	[key: string]: {
@@ -94,9 +95,10 @@ export const loadMicrofrontend = async ({
 	loadScript(`mf-${scope.toLowerCase()}-entry`, entry)
 		.then(() => loadComponent(scope, module)())
 		.then((exported) => {
-			return assert(exported)[composition] as unknown as (
-				containerRef: string | HTMLElement
-			) => () => void;
+			// return assert(exported)[composition] as unknown as (
+			// 	containerRef: string | HTMLElement
+			// ) => () => void;
+			return createMounter(assert(exported)[composition] as any);
 		})
 		.then((mount) => {
 			return {
