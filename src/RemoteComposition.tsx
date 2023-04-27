@@ -24,7 +24,7 @@ export type MicrofrontendProps = {
 	 * eg: `./src/bootstrap`
 	 */
 	module: string;
-	/** The name of the composition exported from the bootstrap file */
+	/** The name of the exported composition.If the composition is the default export,then simply use "default" */
 	composition: string;
 	/**Props to pass down to the composition */
 	compositionProps?: { [key: string]: any };

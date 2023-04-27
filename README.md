@@ -9,54 +9,15 @@ With this module, you can share and load remotion compositions from a URL
 firstly, on the remote project, you need to change the webpack config to include a module federation plugin pointing to a file that exports composition using the `createMounter()` method
 
 ```javascript
-// remotion.config.js
-const webpackOverride = (currentConfiguration) => {
-	return {
-		...currentConfiguration,
-		entry: ['./src/index.ts'],
-		plugins: [
-			...(currentConfiguration.plugins || []),
-			new ModuleFederationPlugin({
-				name: 'remotevideo',
-				filename: 'remoteEntry.js',
-				exposes: ['./src/bootstrap'],
-				shared: {
-					react: {
-						import: 'react',
-						shareKey: 'react',
-						shareScope: 'default',
-						singleton: true,
-						requiredVersion: '^18.0.0',
-					},
-					'react-dom': {
-						singleton: true,
-						requiredVersion: '^18.0.0',
-					},
-					remotion: {
-						import: 'remotion',
-						shareKey: 'remotion',
-						shareScope: 'default',
-						singleton: true,
-					},
-				},
-			}),
-		],
-	};
-};
-Config.overrideWebpackConfig(webpackOverride);
-```
-
-```javascript
-// src/bootstrap.tsx
-
-import {HelloWorld} from './HelloWorld';
-import {Logo} from './HelloWorld/Logo';
-
-import {createMounter} from 'remotion-remote-composition';
-
-
-export const HelloWorldMounter = createMounter(HelloWorld as any);
-export const LogoMounter = createMounter(Logo as () => JSX.Element);
+// remote/remotion.config.js
+import overrideWebpack from "remotion-remote-composition/dist/cjs/overrideWebpack";
+Config.overrideWebpackConfig(
+	overrideWebpack({
+		containerName: "remote",
+		// the path of the file(s) to export (relative to root)
+		federationExposes: ["./src/Composition.tsx"],
+	})
+);
 ```
 
 This will make an endpoint at `remotion preview url/remoteEntry.js'
@@ -67,25 +28,34 @@ In the `Root.tsx` of the host, `import {RemoteComposition} from 'remotion-remote
 and add it as a composition with the props
 
 ```javascript
-    <Composition
-    	id="HelloWorld"
-    	component={RemoteComposition}
-    	durationInFrames={150}
-    	fps={30}
-    	width={1920}
-    	height={1080}
-    	defaultProps={{
-    		url: 'http://localhost:3000/remoteEntry.js',
-    		module: './src/bootstrap',
-    		scope: 'remotevideo',
-    		composition: 'HelloWorldMounter',
-    		compositionProps: {
-    			titleText: 'Welcome to Remotion',
-    			titleColor: 'green',
-    		},
-    	}}
-    />
 
+// host/remotion.config.js
+import overrideWebpack from "remotion-remote-composition/dist/cjs/overrideWebpack";
+
+Config.overrideWebpackConfig(overrideWebpack({ name: "host" }));`
 ```
 
-If you find any issues,etc then feel free to file an issue on [GitHub]()
+```javascript
+<Composition
+	id="HelloWorld"
+	component={RemoteComposition}
+	durationInFrames={150}
+	fps={30}
+	width={1920}
+	height={1080}
+	defaultProps={{
+		url: "http://localhost:3000/remoteEntry.js",
+		module: "./src/Composition.tsx",
+		scope: "remotevideo",
+		/** The name of the exported composition.If the composition is the default export,then simply use "default" */
+		composition: "HelloWorld",
+		// props to pass to the composition
+		compositionProps: {
+			titleText: "Welcome to Remotion",
+			titleColor: "green",
+		},
+	}}
+/>
+```
+
+If you find any issues, etc then feel free to file an issue on [GitHub]()
