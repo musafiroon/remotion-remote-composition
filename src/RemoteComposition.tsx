@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import assert from "tiny-invariant";
 
 import { loadMicrofrontend } from "./utils/loader.utils";
@@ -52,11 +51,10 @@ export type MicrofrontendProps = {
 				};
 			}
 		) => () => void;
-		unmount: (containerRef: string | HTMLElement) => void;
 	}>;
 };
 
-const Microfrontend = ({
+export const RemoteComposition = ({
 	id,
 	scope,
 	url,
@@ -72,27 +70,44 @@ const Microfrontend = ({
 	const frame = useCurrentFrame();
 	const config = useVideoConfig();
 	const containerRef = useRef<HTMLDivElement>(null);
-
+	// const []=useState({})
 	useEffect(() => {
 		// eslint-disable-next-line camelcase
 		window.remotion_imported = false;
 	}, []);
-	const {
-		isFetched: isMounted,
-		isError,
-		error,
-		data,
-	} = useQuery(`microfrontend?entry=${url}&module=${module}`, async () => {
-		assert(loadMicrofrontend, "props.loadMicrofrontend must be a function");
-		return loadMicrofrontend({
-			entry: url,
-			scope,
-			module,
-			composition,
-		});
-	});
+
+	/****/
+
+	const [isMounted, setIsMounted] = useState(false);
+	const [error, setError] = useState<false | Error>(false);
+	const [data, setData] = useState(null);
+
+	useEffect(() => {
+		const fetchMicrofrontend = async () => {
+			assert(
+				loadMicrofrontend,
+				"props.loadMicrofrontend must be a function"
+			);
+			try {
+				const result = await loadMicrofrontend({
+					entry: url,
+					scope,
+					module,
+					composition,
+				});
+				setData(result);
+				setError(null);
+			} catch (err) {
+				setData(null);
+				setError(err);
+			}
+			setIsMounted(true);
+		};
+		fetchMicrofrontend();
+	}, [url, module, scope, composition, loadMicrofrontend]);
+
 	const mount = data?.mount;
-	console.log(data);
+	// console.log(data);
 
 	const mfClassName = `microfrontend-container spin-when-empty${
 		className ? " " + className : ""
@@ -102,7 +117,7 @@ const Microfrontend = ({
 	const [mfError, setMFError] = useState<Error | null>(null);
 
 	useEffect(() => {
-		if (!isMounted || isError || typeof mount !== "function") {
+		if (!isMounted || error || typeof mount !== "function") {
 			return;
 		}
 
@@ -140,9 +155,9 @@ const Microfrontend = ({
 				);
 			}
 		};
-	}, [isMounted, isError, url, module, frame, config]);
+	}, [isMounted, error, url, module, frame, config]);
 
-	return isError ? (
+	return error ? (
 		<div>
 			{(error instanceof Error
 				? error
@@ -173,7 +188,7 @@ const Microfrontend = ({
 	);
 };
 
-Microfrontend.defaultProps = {
+RemoteComposition.defaultProps = {
 	loadMicrofrontend,
 	Loading: () => (
 		<AbsoluteFill
@@ -209,12 +224,3 @@ Microfrontend.defaultProps = {
 		</AbsoluteFill>
 	),
 };
-
-/**
- * A composition that takes loads a remote composition from an url
- */
-export const RemoteComposition = (props: MicrofrontendProps) => (
-	<QueryClientProvider client={new QueryClient()}>
-		<Microfrontend {...props} />
-	</QueryClientProvider>
-);

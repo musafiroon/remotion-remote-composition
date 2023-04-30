@@ -58,4 +58,12 @@ Config.overrideWebpackConfig(overrideWebpack({ name: "host" }));`
 />
 ```
 
+> Note: you need to add this to the src/index.ts file
+
+```
+import React from "react";
+
+window.React = React
+```
+
 If you find any issues, etc then feel free to file an issue on [GitHub]()
