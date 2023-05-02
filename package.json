@@ -21,10 +21,10 @@
 		"remotion": "3.x.x"
 	},
 	"devDependencies": {
-		"@types/react": "^18.0.0",
-		"@types/react-dom": "^18.0.11",
+		"@types/react": "^18.2.0",
+		"@types/react-dom": "^18.2.1",
 		"typescript": "5.0.4",
-		"webpack": "^5.78.0"
+		"webpack": "^5.81.0"
 	},
 	"keywords": [
 		"remotion",
@@ -35,5 +35,11 @@
 	"license": "MIT",
 	"repository": {
 		"url": "https://github.com/musafiroon/remotion-remote-composition"
+	},
+	"dependencies": {
+		"@types/node": "^18.16.3",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"remotion": "3.3.87"
 	}
 }

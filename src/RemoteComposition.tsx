@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import assert from "tiny-invariant";
+import { assert } from "./utils/assert.utils";
 
 import { loadMicrofrontend } from "./utils/loader.utils";
 import {
