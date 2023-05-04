@@ -38,7 +38,7 @@ export function loadComponent(scope: string, module: string) {
 		}
 		const factory = await Promise.race([
 			container?.get(module),
-			sleep(1000).then(() =>
+			sleep(3000).then(() =>
 				Promise.reject(
 					new Error(
 						`No module ${module} was found in window.${scope} container`

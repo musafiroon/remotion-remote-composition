@@ -36,12 +36,12 @@ export const overrideWebpack: (
 								shareKey: "react", // under this name the shared module will be placed in the share scope
 								shareScope: "default", // share scope with this name will be used
 								singleton: true, // only a single version of the shared module is allowed
-								requiredVersion: "^18.2.0",
+								requiredVersion: "^18.x.x",
 								eager: true,
 							},
 							"react-dom": {
 								singleton: true, // only a single version of the shared module is allowed
-								requiredVersion: "^18.2.0",
+								requiredVersion: "^18.x.x",
 								eager: true,
 							},
 							remotion: {
@@ -88,11 +88,11 @@ export const overrideWebpack: (
 							shareKey: "react", // under this name the shared module will be placed in the share scope
 							shareScope: "default", // share scope with this name will be used
 							singleton: true, // only a single version of the shared module is allowed
-							requiredVersion: "^18.2.0",
+							requiredVersion: "^18.x.x",
 						},
 						"react-dom": {
 							singleton: true, // only a single version of the shared module is allowed
-							requiredVersion: "^18.2.0",
+							requiredVersion: "^18.x.x",
 						},
 						remotion: {
 							import: "remotion",
