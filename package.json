@@ -24,7 +24,7 @@
 		"@types/react": "^18.2.0",
 		"@types/react-dom": "^18.2.1",
 		"typescript": "5.0.4",
-		"webpack": "^5.81.0"
+		"@types/node": "^18.16.3"
 	},
 	"keywords": [
 		"remotion",
@@ -37,9 +37,6 @@
 		"url": "https://github.com/musafiroon/remotion-remote-composition"
 	},
 	"dependencies": {
-		"@types/node": "^18.16.3",
-		"react": "^18.2.0",
-		"react-dom": "^18.2.0",
-		"remotion": "3.3.87"
+		"webpack": "^5.81.0"
 	}
 }
